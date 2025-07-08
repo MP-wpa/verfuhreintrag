@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Move!T - Digitale Verfuhr-Dokumentation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 480px;
+      margin: auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-top: 5px solid #134F5C;
+    }
+    header {
+      background-color: #134F5C;
+      color: white;
+      padding: 20px;
+      text-align: left;
+      border-radius: 10px 10px 0 0;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.4em;
+    }
+    small {
+      font-size: 0.9em;
+      display: block;
+      color: #B0BEC5;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #134F5C;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+    button {
+      background-color: #134F5C;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #0d3d47;
+    }
+    .logo {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .logo img {
+      max-width: 180px;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      width: 100%;
+      height: 150px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Move!T<br><small>Digitale Verfuhr-Dokumentation</small></h1>
+    </header>
+
+    <label for="akteur">Akteur:</label>
+    <select id="akteur">
+      <option>Michael Pollak, wpa</option>
+      <option>Waltraud Schweighofer, wpa</option>
+      <option>Stephan Kern, wpa</option>
+    </select>
+
+    <label for="projekt">Projekt:</label>
+    <select id="projekt">
+      <option>VAN11 Errichtung Wendeanlage, Los2</option>
+      <option>TS Simmering_DANI 3_Drehstelllager</option>
+      <option>TS Simmering_DANI 3_Kanal</option>
+    </select>
+
+    <label for="anfallsort">Anfallsort:</label>
+    <select id="anfallsort">
+      <option>Bahnhof Raasdorf, 2281 Raasdorf</option>
+      <option>Grillgasse 48, 1100 Wien KG 01107 (Simmering)</option>
+    </select>
+
+    <label for="lieferant">Lieferant:</label>
+    <select id="lieferant">
+      <option>ÖBB Infrastruktur AG Praterstern 3, A-1020 Wien</option>
+      <option>ARGE Stellwerk</option>
+      <option>ARGE Kanal Habu-Stettin</option>
+    </select>
+
+    <label for="beurteilung">Beurteilungsnachweis:</label>
+    <select id="beurteilung">
+      <option>GZ_5_25_0099_Viadukte Aushub Bogen 1</option>
+      <option>GZ_5_25_0060_FJB_20-184151-2_Bahnsteig_Spittelau</option>
+      <option>2025_LOS1_GZ_5_25_0065_ESTW_Penzing Kabelwege</option>
+    </select>
+
+    <label for="aushubbereich">Aushubbereich:</label>
+    <select id="aushubbereich">
+      <option>AB1</option>
+      <option>AB2+3</option>
+      <option>AB4</option>
+    </select>
+
+    <label for="teilmenge">Teilmenge:</label>
+    <select id="teilmenge">
+      <option>TM1</option>
+      <option>TM3–7</option>
+      <option>TM5,6,8,9</option>
+    </select>
+
+    <label for="menge">Menge:</label>
+    <input type="text" id="menge" placeholder="z. B. 12,5 m³">
+
+    <label for="notizen">Notizen:</label>
+    <textarea id="notizen" maxlength="100" placeholder="max. 100 Zeichen"></textarea>
+
+    <label>Unterschrift des Akteurs:</label>
+    <canvas id="signature" width="400" height="150"></canvas>
+
+    <button id="submit">ERFASSEN</button>
+    <div class="logo">
+      <img src="wpa_logo.png" alt="wpa Logo">
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('signature');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+
+    canvas.addEventListener('mousedown', () => drawing = true);
+    canvas.addEventListener('mouseup', () => drawing = false);
+    canvas.addEventListener('mouseout', () => drawing = false);
+    canvas.addEventListener('mousemove', draw);
+
+    function draw(e) {
+      if (!drawing) return;
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#000';
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    document.getElementById('submit').addEventListener('click', () => {
+      const data = {
+        akteur: document.getElementById('akteur').value,
+        projekt: document.getElementById('projekt').value,
+        anfallsort: document.getElementById('anfallsort').value,
+        lieferant: document.getElementById('lieferant').value,
+        beurteilung: document.getElementById('beurteilung').value,
+        aushubbereich: document.getElementById('aushubbereich').value,
+        teilmenge: document.getElementById('teilmenge').value,
+        menge: document.getElementById('menge').value,
+        notizen: document.getElementById('notizen').value,
+        unterschrift: canvas.toDataURL()
+      };
+
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'verfuhreintrag.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
